@@ -193,3 +193,42 @@ PostgreSQL Server
 
 java.sql.Connection, DriverManager, PreparedStatement, etc. are part of the JDBC API.
 But Java needs a PostgreSQL-specific driver to actually communicate with PostgreSQL.
+
+DriverManager is part of Java JDBC:
+
+java.sql.DriverManager
+
+Its job is roughly:
+Find an appropriate JDBC driver and ask that driver to establish the database connection.
+
+Conceptually:
+Your code
+   │
+   │ DriverManager.getConnection()
+   ▼
+DriverManager
+   │
+   │ "I need PostgreSQL"
+   ▼
+PostgreSQL JDBC Driver
+   │
+   │ network connection
+   ▼
+PostgreSQL Server
+
+PostgreSQL
+     │
+     │ connection established
+     ▼
+PostgreSQL JDBC Driver
+     │
+     ▼
+DriverManager
+     │
+     ▼
+Connection object
+
+ResultSet:
+
+ResultSet is a JDBC object that holds the rows returned by a SQL SELECT query.
+PostgreSQL returns the data, and JDBC gives that returned data to your Java program through a ResultSet
