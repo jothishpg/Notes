@@ -390,6 +390,14 @@ The Google callback I'm receiving belongs to the login request that MY applicati
 This protects the OAuth flow against CSRF/login-request injection attacks.
 Think of state as a temporary secret ticket.
 
+https://accounts.google.com/o/oauth2/v2/auth"
+                        + "?client_id=" + encode(GOOGLE_CLIENT_ID)
+                        + "&redirect_uri=" + encode(googleRedirectUri(request))
+                        + "&response_type=code"
+                        + "&scope=" + encode("openid email profile")
+                        + "&state=" + encode(state)
+                        + "&prompt=select_account"
+
 client_id:
 client_id=YOUR_CLIENT_ID
 
@@ -405,3 +413,88 @@ This tells Google:
 For example, suppose your backend has:
 http://localhost:8080/parking-app/api/auth/google/callbacb
 
+response_type:
+
+response_type=code
+This is very important.
+You're telling Google:
+"After authentication, give me an authorization code."
+
+Why use code?
+Because this is the Authorization Code flow.
+The important idea is:
+
+Browser
+   │
+   │ authorization request
+   ▼
+Google
+   │
+   │ authorization code
+   ▼
+Browser → Your backend
+              │
+              │ exchange code
+              ▼
+           Google
+              │
+              │ tokens
+              ▼
+           Backend
+
+scope:
+
+scope=openid%20email%20profile
+
+This tells Google:
+"What information/permissions does my application want?"
+There are three scopes here:
+
+openid
+email
+profile
+
+The %20 is simply URL encoding for a space.
+So:
+openid%20email%20profile
+
+open_id tells Google:
+
+"I am not just asking for permission to access something. I want Google to authenticate this person and give my application verified identity information."
+
+OAuth 2.0 was designed primarily around authorization:
+"Can this application access something on behalf of this user?"
+
+OpenID Connect builds an authentication/identity layer on top of OAuth 2.0:
+"Who is this user?"
+
+The important part is:
+
+openid
+
+Google recognizes:
+"This application is requesting OpenID Connect authentication."
+
+So Google can return an ID token as part of the OpenID Connect flow.
+
+Your Application
+       │
+       │ scope=openid
+       ▼
+     Google
+       │
+       │ Authenticate user
+       ▼
+User signs in
+       │
+       ▼
+Google creates ID Token
+       │
+       ▼
+Your Application
+
+prompt:
+
+prompt=select_account
+This tells Google how you want the account-selection experience to behave.
+select_account essentially asks Google to let the user choose a Google account
