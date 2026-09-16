@@ -498,3 +498,65 @@ prompt:
 prompt=select_account
 This tells Google how you want the account-selection experience to behave.
 select_account essentially asks Google to let the user choose a Google account
+
+GoogleTokenResponse tokenResponse =
+                    new GoogleAuthorizationCodeTokenRequest(
+                            HTTP_TRANSPORT,
+                            JSON_FACTORY,
+                            GOOGLE_CLIENT_ID,
+                            GOOGLE_CLIENT_SECRET,
+                            code,
+                            googleRedirectUri(request)
+                    ).execute();
+
+GoogleIdToken token =
+          googleVerifier().verify(tokenResponse.getIdToken());
+
+What does .execute() mean?
+This is very important.
+
+Before:
+new GoogleAuthorizationCodeTokenRequest(...)
+you are essentially building the request.
+
+When you call:
+.execute();
+the request actually happens.
+
+Create request object
+        ↓
+execute()
+        ↓
+HTTP request sent to Google
+        ↓
+Google processes it
+        ↓
+Google sends response
+        ↓
+GoogleTokenResponse
+
+Token
+ ↓
+googleVerifier()
+ ↓
+Verify signature/claims
+ ↓
+Valid?
+
+GoogleIdToken.Payload payload = token.getPayload();
+
+Think of it like:
+
+Verified Google ID Token
+          ↓
+       Payload
+          ↓
+identity information
+
+Now your application can read the user's information.
+
+GeneralSecurityException
+Can occur during security-related operations such as token verification.
+
+IOException
+Can occur during network communication / reading responses.
