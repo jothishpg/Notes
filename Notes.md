@@ -322,3 +322,86 @@ private static final SecureRandom RANDOM =
 
 This one is particularly important for authentication/security.
 SecureRandom generates cryptographically strong random values.
+
+ResultSet:
+
+ResultSet represents the rows returned by the database.
+
+if (!result.next()
+        || !password.equals(result.getString("password"))) {
+
+This is extremely important.
+Initially the ResultSet cursor is before the first row.
+
+ResultSet
+
+   cursor
+     ↓
+   ┌─────────┐
+   │ Row 1   │
+   ├─────────┤
+   │ Row 2   │
+   └─────────┘
+
+Google Authentication:
+
+                YOUR APPLICATION
+                    |
+                    | 1. Click "Sign in with Google"
+                    ↓
+              /api/auth/google/start
+                    |
+                    | 2. Generate state
+                    | 3. Save state in session
+                    | 4. Build Google URL
+                    |
+                    | 5. Redirect browser
+                    ↓
+              GOOGLE LOGIN PAGE
+                    |
+                    | User selects Google account
+                    | User gives consent
+                    ↓
+              Google authenticates
+                    |
+                    | 6. Google redirects browser
+                    ↓
+        /api/auth/google/callback?code=...&state=...
+                    |
+                    | 7. Backend verifies state
+                    | 8. Exchanges code for tokens
+                    | 9. Verifies Google identity
+                    ↓
+                YOUR DATABASE
+                    |
+                    | 10. Find/create user
+                    ↓
+              Create application session
+                    |
+                    ↓
+              Driver/Admin page
+
+State:
+
+String state = newGoogleState();
+This creates a random value.
+
+The Google callback I'm receiving belongs to the login request that MY application started."
+This protects the OAuth flow against CSRF/login-request injection attacks.
+Think of state as a temporary secret ticket.
+
+client_id:
+client_id=YOUR_CLIENT_ID
+
+This identifies your application to Google.
+When you created your OAuth client in Google Cloud, Google gave you something like:
+123456789012-abcdefg123.apps.googleusercontent.com
+
+Redirect Url:
+
+redirect_uri=YOUR_CALLBACK
+This tells Google:
+"After the user finishes authentication, where should you send the browser?"
+For example, suppose your backend has:
+http://localhost:8080/parking-app/api/auth/google/callbacb
+
