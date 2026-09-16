@@ -232,3 +232,51 @@ ResultSet:
 
 ResultSet is a JDBC object that holds the rows returned by a SQL SELECT query.
 PostgreSQL returns the data, and JDBC gives that returned data to your Java program through a ResultSet
+
+Filter :
+
+@Provider tells Jersey:
+
+"This class is a JAX-RS provider."
+A provider is a component that extends or modifies Jersey's request/response processing.
+For example, providers can be:
+
+Request filters
+Response filters
+Exception mappers
+Entity readers
+Entity writers
+Other JAX-RS extension components
+
+So it's not merely a generic "register this class" annotation.
+
+@Path tells Jersey:
+"This is a JAX-RS resource."
+@Provider tells Jersey:
+"This is a JAX-RS provider."
+
+Main difference
+	Environment variable	                       System property
+Belongs to	OS/process                        environment	Java application
+Read using	System.getenv()	                  System.getProperty()
+Example	GOOGLE_CLIENT_ID=abc	                -DGOOGLE_CLIENT_ID=abc
+Set by	Windows, Linux, Docker,server, etc.	   Java command line/application
+Available to	Processes that receive the       That Java process/JVM
+environment	
+
+CLASS
+ ↓
+General-purpose object
+ ↓
+Can contain mutable data + lots of behavior
+
+
+RECORD
+ ↓
+Data-carrying object
+ ↓
+Compact syntax
+ ↓
+Values are final
+ ↓
+Java generates common methods
