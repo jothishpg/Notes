@@ -280,3 +280,45 @@ Compact syntax
 Values are final
  ↓
 Java generates common methods
+
+Logger:
+private static final Logger LOGGER =
+        Logger.getLogger(AuthResource.class.getName());
+
+This creates a Java logger for your AuthResource.
+Its purpose is to record information about what your application is doing.
+
+Http_transport:
+
+private static final NetHttpTransport HTTP_TRANSPORT =
+        new NetHttpTransport();
+
+This is related to making HTTP requests from your Java application to external HTTP services.
+NetHttpTransport is from Google's HTTP client library.
+Your application might need this when communicating with Google during OAuth.
+
+JSON_FACTORY:
+
+private static final GsonFactory JSON_FACTORY =
+        GsonFactory.getDefaultInstance();
+
+This is used for JSON processing by Google's client libraries.
+GsonFactory is based on Google's Gson JSON library.
+The JSON_FACTORY provides the JSON parser/serializer infrastructure that Google's OAuth/client classes need.
+
+whay can't we jackson here??
+
+Yes, you can use Jackson in your application, but the important point is that JSON_FACTORY is not there simply because your application needs JSON. It is there because the Google library you're using expects a specific JSON factory.
+
+GsonFactory.getDefaultInstance()
+
+which gives you the standard/default Gson factory.
+Again, you don't need to create a new one for every request.
+
+Secure_Random:
+
+private static final SecureRandom RANDOM =
+        new SecureRandom();
+
+This one is particularly important for authentication/security.
+SecureRandom generates cryptographically strong random values.
