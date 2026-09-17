@@ -1098,3 +1098,57 @@ Authorization:
        Bearer
          +
     Access Token
+
+Base64:
+
+Base64 converts binary data into text.
+Binary bytes
+     ↓
+   Base64
+     ↓
+	Text
+Why getUrlEncoder() instead of normal Base64?
+
+Normal Base64 can contain characters such as:
++
+/
+=
+
+Some of these aren't convenient inside URLs.
+Java therefore provides:
+
+Base64.getUrlEncoder()
+which uses URL-safe characters.
+
+Conceptually:
+Normal Base64
+A-Z a-z 0-9 + /
+              ↑ ↑
+          problematic in URLs
+
+URL Base64
+A-Z a-z 0-9 - _
+              ↑ ↑
+          URL-friendly
+
+URLEncoder:
+URLEncoder is completely different
+URLEncoder is used to percent-encode text for use as URL form/query data.
+
+Session storage:
+
+Your computer
+┌─────────────────────────────────────┐
+│ Tomcat JVM                          │
+│                                     │
+│   RAM                               │
+│   ┌─────────────────────────────┐   │
+│   │ HttpSession                 │   │
+│   │                             │   │
+│   │ ID = ABC123                 │   │
+│   │ user_id = 10                │   │
+│   │ name = Jothish              │   │
+│   │ role = DRIVER               │   │
+│   └─────────────────────────────┘   │
+│                                     │
+└─────────────────────────────────────┘
