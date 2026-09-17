@@ -257,11 +257,11 @@ So it's not merely a generic "register this class" annotation.
 
 Main difference
 	Environment variable	                       System property
-Belongs to	OS/process                        environment	Java application
-Read using	System.getenv()	                  System.getProperty()
+Belongs to	OS/process environment	              Java application
+Read using	System.getenv()	                      System.getProperty()
 Example	GOOGLE_CLIENT_ID=abc	                -DGOOGLE_CLIENT_ID=abc
-Set by	Windows, Linux, Docker,server, etc.	   Java command line/application
-Available to	Processes that receive the       That Java process/JVM
+Set by	Windows, Linux, Docker,server, etc.	    Java command line/application
+Available to Processes that receive the           That Java process/JVM
 environment	
 
 CLASS
@@ -560,3 +560,43 @@ Can occur during security-related operations such as token verification.
 
 IOException
 Can occur during network communication / reading responses.
+
+First, what is the ID token?
+
+After the user logs into Google, your backend exchanges the authorization code for tokens.
+Google gives something conceptually like:
+
+ID Token
+   ↓
+eyJhbGciOiJSUzI1NiIs...
+
+An ID token is a JWT (JSON Web Token).
+Conceptually it contains three parts:
+
+HEADER.PAYLOAD.SIGNATURE
+
+For example:
+eyJhbGciOiJSUzI1NiJ9
+.
+eyJzdWIiOiIxMjM0NSIsImVtYWlsIjoi...
+.
+ABC123XYZ...
+
+Don't think of this as simply an encoded string. The important part is that the token is signed by Google.
+
+Google
+   │
+   │ private key
+   ↓
+CREATE SIGNATURE
+   │
+   ↓
+HEADER.PAYLOAD.SIGNATURE
+   │
+   │
+   ↓
+Your Backend
+   │
+   │ Google's public key
+   ↓
+VERIFY SIGNATURE
