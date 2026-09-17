@@ -799,3 +799,302 @@ Your Backend
    │ Google's public key
    ↓
 VERIFY SIGNATURE
+
+At a high level, the verifier checks important properties of the ID token, including things such as:
+
+1. Is the token structurally valid?
+2. Is its signature valid?
+3. Was it issued by the expected Google issuer?
+4. Is it intended for the configured audience/client ID?
+5. Is it otherwise acceptable according to the library's token validation rules?
+
+In your code:
+GoogleTokenResponse tokenResponse =
+        new GoogleAuthorizationCodeTokenRequest(
+                HTTP_TRANSPORT,
+                JSON_FACTORY,
+                GOOGLE_CLIENT_ID,
+                GOOGLE_CLIENT_SECRET,
+                code,
+                googleRedirectUri(request)
+        ).execute();
+
+Google's token endpoint returns something conceptually like:
+
+{
+  "access_token": "ya29.a0....",
+  "expires_in": 3599,
+  "refresh_token": "1//0g....",
+  "scope": "openid email profile",
+  "token_type": "Bearer",
+  "id_token": "eyJhbGciOiJSUzI1NiIs..."
+}
+
+GoogleTokenResponse converts that JSON response into a Java object.
+
+The important fields                   Field	Meaning
+access_token				 		   Token used to call Google's APIs on behalf of the user
+id_token							   JWT containing information about the authenticated Google account
+expires_in							   How many seconds the access token is valid
+refresh_token						   Can be used to obtain new access tokens; may not be returned in every flow
+scope								   Permissions/scopes granted
+token_type							   Usually Bearer
+
+1. First, imagine a real parking lot
+
+You arrive at a parking lot.
+At the entrance, there is a security guard.
+
+You say:
+"I'm Dinesh. I want to enter."
+The guard doesn't simply trust you.
+
+Instead, he says:
+"Go to Google, prove who you are, and bring me the authorization slip."
+Google verifies you and gives your application some information/tokens.
+
+That entire package is what your Java code represents as:
+
+GoogleTokenResponse
+
+Think of it as:
+A package that Google gives your backend after exchanging the authorization code.
+
+2. What does this package contain?
+
+Imagine Google gives your parking system a box:
+
+             GOOGLE TOKEN RESPONSE
+        ┌─────────────────────────────┐
+        │                             │
+        │  Access Token                │
+        │  ID Token                   │
+        │  Expires In                 │
+        │  Refresh Token               │
+        │  Scope                       │
+        │  Token Type                  │
+        │                             │
+        └─────────────────────────────┘
+
+Each item has a different purpose.
+Let's understand each one.
+
+3. access_token
+
+Imagine the parking security guard gives you a special access card.
+The card says:
+
+"This person is allowed to access certain Google services."
+
+For example, your application might want to access some Google API.
+The access token is used like:
+
+Your Parking Application
+          |
+          | access_token
+          ↓
+     Google API
+
+For example:
+
+GET Google API
+Authorization: Bearer ya29.xxxxxxxxx
+
+Google sees the access token and says:
+"This application has permission to access the requested Google resource."
+Important
+
+The access token is primarily about:
+What Google resources your application is allowed to access.
+It is not the main thing you're using to identify the user in your current code.
+
+Your application mainly uses:
+
+tokenResponse.getIdToken()
+
+4. id_token
+   
+This is the important one for your application.
+Think of this as a Google-issued identity card.
+Imagine Google gives your driver:
+
+┌─────────────────────────────┐
+│       GOOGLE ID CARD        │
+│                             │
+│ Name: Dinesh                │
+│ Email: dinesh@gmail.com     │
+│ Google ID: 123456789        │
+│ Issuer: Google              │
+│ Audience: Your Application  │
+│                             │
+│       GOOGLE SIGNATURE      │
+└─────────────────────────────┘
+
+Google digitally signs this identity card.
+Your backend receives it as a JWT:
+HEADER.PAYLOAD.SIGNATURE
+
+For example:
+
+eyJhbGciOiJSUzI1NiJ9.
+eyJzdWIiOiIxMjM0NTY3ODkiLCJlbWFpbCI6ImRpbmVz...
+.
+abcXYZSignature...
+
+Your code does:
+
+GoogleIdToken token =
+        googleVerifier().verify(tokenResponse.getIdToken());
+
+You're essentially asking:
+"Google, is this identity card really issued by you and has nobody modified it?"
+The verifier checks the signature and important claims.
+
+If valid:
+
+GoogleIdToken.Payload payload = token.getPayload();
+
+Then you can read:
+
+String googleSub = payload.getSubject();
+String email = payload.getEmail();
+String name = (String) payload.get("name");
+
+So:
+
+GoogleTokenResponse
+       |
+       └── id_token
+              |
+              └── GoogleIdToken
+                     |
+                     └── Payload
+                            |
+                            ├── sub
+                            ├── email
+                            ├── name
+                            ├── aud
+                            ├── iss
+                            └── etc.
+5. expires_in
+
+Now imagine Google gives you an access card.
+The card has:
+Valid for 1 hour
+That's expires_in.
+
+For example:
+
+{
+    "expires_in": 3600
+}
+
+Means:
+
+3600 seconds
+   ↓
+60 minutes
+   ↓
+1 hour
+
+So:
+
+10:00 AM → token issued
+
+10:00 AM → valid
+10:30 AM → valid
+10:59 AM → valid
+11:00 AM → expired
+
+Think:
+"How long is the access token valid?"
+
+6. refresh_token
+
+Now imagine your access card expires after one hour.
+Instead of going through the entire Google login process again, Google may give your application a special renewal card.
+That's the refresh token.
+
+Conceptually:
+
+Refresh Token
+      |
+      ↓
+Google
+      |
+      ↓
+New Access Token
+
+For example:
+
+Access Token
+valid for 1 hour
+       ↓
+expires
+       ↓
+Refresh Token
+       ↓
+Google
+       ↓
+New Access Token
+
+But an important point:
+A refresh token isn't necessarily returned in every login/token exchange.
+Also, for your simple login flow, you don't need to think of it as something you automatically use every time.
+
+7. scope
+
+Imagine you go to a hotel.
+You get a key card.
+But the key card might allow:
+
+Room 205       ✓
+Gym            ✓
+Swimming pool  ✓
+Staff room     ✗
+
+Those permissions are similar to scopes.
+Your code requests:
+
+scope=openid email profile
+That means your application is asking Google for certain permissions/information.
+
+For example:
+openid
+   ↓
+OpenID Connect identity
+
+email
+   ↓
+Email information
+
+profile
+   ↓
+Basic profile information
+
+So scope essentially answers:
+"What access/information is being requested?"
+
+8. token_type
+
+Now imagine the security guard says:
+"This is a Bearer access card."
+
+That's similar to:
+
+{
+    "token_type": "Bearer"
+}
+
+Bearer basically means:
+Whoever possesses this token can present it as the credential.
+It is commonly sent like:
+
+Authorization: Bearer ACCESS_TOKEN
+
+So:
+
+Authorization:
+       Bearer
+         +
+    Access Token
