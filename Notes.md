@@ -600,3 +600,202 @@ Your Backend
    │ Google's public key
    ↓
 VERIFY SIGNATURE
+
+Token Creation:
+
+First, Google decides what information goes into the token
+Suppose the user logs in with Google.
+
+Google knows information such as:
+
+{
+  "sub": "123456789",
+  "email": "user@gmail.com",
+  "name": "Dinesh",
+  "aud": "MY_GOOGLE_CLIENT_ID"
+}
+
+Google creates claims such as these for the payload.
+For example:
+
+{
+  "iss": "https://accounts.google.com",
+  "sub": "123456789",
+  "email": "user@gmail.com",
+  "aud": "MY_GOOGLE_CLIENT_ID",
+  "exp": 1790000000
+}
+
+This is the payload JSON.
+
+2. Google creates the Header
+Google needs to tell the verifier information about how the token was signed.
+For example:
+
+{
+  "alg": "RS256",
+  "typ": "JWT"
+}
+
+Meaning:
+alg = RS256
+      ↓
+algorithm used for the signature
+
+typ = JWT
+      ↓
+this is a JWT
+This is the header JSON.
+
+3. Header and payload are encoded
+The JSON itself isn't directly placed into the final token.
+Google first converts the JSON into bytes and then uses Base64URL encoding.
+For example:
+
+Header JSON
+   ↓
+Base64URL encode
+   ↓
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9
+
+Similarly:
+
+Payload JSON
+   ↓
+Base64URL encode
+   ↓
+eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJzdWIiOiIxMj...
+
+So now Google has:
+
+ENCODED_HEADER
+.
+ENCODED_PAYLOAD
+
+4. Google creates the string that will be signed
+Google joins the two encoded parts with a .:
+
+encodedHeader + "." + encodedPayload
+For example:
+
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9
+.
+eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20i...
+
+This entire string is called the signing input.
+
+HEADER_ENCODED.PAYLOAD_ENCODED
+              ↑
+         signing input
+
+5. Google creates the signature
+This is the most important part.
+Google has a private key.
+It takes:
+
+Signing Input
+     +
+Google's private key
+     +
+RS256 algorithm
+     ↓
+SIGNATURE
+
+Conceptually:
+
+SIGNATURE =
+RS256(
+    Base64URL(Header) + "." + Base64URL(Payload),
+    Google_Private_Key
+)
+The actual cryptographic operation is more specific than this simplified notation, but this is the right mental model.
+The important point is:
+The signature is created using Google's private key.
+
+6. Google Base64URL-encodes the signature
+The binary signature is also Base64URL encoded.
+For example:
+
+Binary signature
+       ↓
+Base64URL
+       ↓
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6y...
+
+Now we have all three pieces:
+
+ENCODED HEADER
+.
+ENCODED PAYLOAD
+.
+ENCODED SIGNATURE
+
+7. Google joins all three
+Finally:
+HEADER.PAYLOAD.SIGNATURE
+
+For example:
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9
+.
+eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJzdWIiOiIxMj...
+.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6y...
+
+That entire string is the ID token.
+
+8. Now your backend receives this token
+Your backend gets something like:
+
+HEADER.PAYLOAD.SIGNATURE
+
+Your code does:
+googleVerifier().verify(idToken);
+
+The verifier then performs checks.
+Very roughly:
+
+                ID TOKEN
+                   ↓
+        ┌──────────┴──────────┐
+        ↓                     ↓
+     Header                Payload
+        ↓                     ↓
+     alg=RS256             aud=YOUR_CLIENT_ID
+                           iss=Google
+                           exp=...
+        │                     │
+        └──────────┬──────────┘
+                   ↓
+             Verify Signature
+                   ↓
+       Google's public key
+                   ↓
+             Valid or invalid
+
+Why public key?
+Google created the signature using:
+
+Google PRIVATE KEY
+
+Your backend verifies it using the corresponding:
+
+Google PUBLIC KEY
+
+So:
+
+Google
+   │
+   │ private key
+   ↓
+CREATE SIGNATURE
+   │
+   ↓
+HEADER.PAYLOAD.SIGNATURE
+   │
+   │
+   ↓
+Your Backend
+   │
+   │ Google's public key
+   ↓
+VERIFY SIGNATURE
