@@ -1152,3 +1152,41 @@ Your computer
 │   └─────────────────────────────┘   │
 │                                     │
 └─────────────────────────────────────┘
+
+
+GoogleTokenResponse:
+
+new GoogleAuthorizationCodeTokenRequest(
+    HTTP_TRANSPORT,        // (1)
+    JSON_FACTORY,          // (2)
+    GOOGLE_CLIENT_ID,       // (3)
+    GOOGLE_CLIENT_SECRET,   // (4)
+    code,                   // (5)
+    googleRedirectUri(request)  // (6)
+)
+
+HTTP_TRANSPORT — the underlying HTTP client implementation (typically NetHttpTransport or ApacheHttpTransport) that will actually send the POST request over the wire.
+JSON_FACTORY — the JSON parser (GsonFactory or JacksonFactory) used to deserialize Google's JSON response into a GoogleTokenResponse object.
+GOOGLE_CLIENT_ID — identifies which app is asking. Google checks this against the registered OAuth client in your Cloud Console project.
+GOOGLE_CLIENT_SECRET — proves the request is genuinely coming from your backend and not an impersonator. This is why this call must happen server-side — a client_secret embedded in a browser or mobile app isn't a secret anymore.
+code — the single-use authorization code you received in the redirect from step 2. Single-use is critical: reuse it and Google returns invalid_grant.
+redirectUri — this is not used to redirect anywhere here. Its only purpose in this call is a security check: Google verifies this value matches, character-for-character, the redirect_uri that was originally sent in the authorization request in step 1. This prevents an authorization code that leaked from being redeemed by a different endpoint.
+
+The library builds an HTTP POST request to Google's token endpoint (https://oauth2.googleapis.com/token), with a body like:
+code=<the code>
+client_id=<your client id>
+client_secret=<your secret>
+redirect_uri=<your redirect uri>
+grant_type=authorization_code
+
+JWT Token:
+
+SIGNING (Google):
+hash(header + payload) --[sign with private key]--> Signature
+
+VERIFYING (your server):
+recovered_hash = Signature --[unlock with public key]-->
+fresh_hash     = hash(header + payload)     ← recomputed by your server itself
+
+if recovered_hash == fresh_hash → valid, untampered
+if recovered_hash != fresh_hash → invalid, reject
