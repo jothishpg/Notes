@@ -8,6 +8,42 @@ Authorization: [Bearer EAAPaRQYlbB8BSgknSpfksK8sr9ErHsMrQ0hAoOyPAfCCf7h25lxsReq3
 Content-Type: [application/json]
 Body:
 
+_________________________________________________
+Status code : 200
+HTTP version: HTTP_2
+Request URI : https://graph.facebook.com/v23.0/1228158723724156/messages
+Method      : POST
+
+--- Response headers ---
+:status: 200
+access-control-allow-origin: *
+alt-svc: h3=":443"; ma=86400
+cache-control: private, no-cache, no-store, must-revalidate
+content-length: 207
+content-security-policy: frame-ancestors 'none'
+content-type: application/json
+date: Sun, 20 Sep 2026 19:35:23 GMT
+expires: Sat, 01 Jan 2000 00:00:00 GMT
+facebook-api-version: v26.0
+pragma: no-cache
+strict-transport-security: max-age=15552000; preload
+vary: Origin, Accept-Encoding
+x-content-type-options: nosniff
+x-fb-connection-quality: GOOD; q=0.7, rtt=68, rtx=0, c=10, mss=1280, tbw=3587, tp=-1, tpl=-1, uplat=1731, ullat=0
+21-Sep-2026 01:05:49.933 INFO [http-nio-8080-exec-1] org.example.notification.WhatsAppNotificationService.sendTemplate WhatsApp notification sent successfully using template hello_world to +919943466852.
+x-fb-debug: 4AERsbHzZjprofTXqLcpuoRBs85v9eLt5j6FTE8Y1femTg7Z4CaQVVofZZ2p1eSZOin/uaeUUkI85HRA9RnKRg==
+x-fb-request-id: AgLqX9oHpApau_2c558Z1u1
+x-fb-rev: 1047984038
+x-fb-trace-id: AX/utzFIRHM
+x-frame-options: DENY
+
+--- Body ---
+{"messaging_product":"whatsapp","contacts":[{"input":"+919943466852","wa_id":"919943466852"}],"messages":[{"id":"wamid.HBgMOTE5OTQzNDY2ODUyFQIAERgSNzlFNkUyMzE4Mzk2MzQ0ODY5AA==","message_status":"accepted"}]}
+
+--- Extras ---
+SSL session    : jdk.internal.net.http.common.ImmutableExtendedSSLSession@423dc404
+Previous resp. : null
+_____________________________________________________________________
 template : {name=jaspers_market_order_confirmation_v1, language={code=en_US}, components=[{type=body, parameters=[{text=23EUAI048 JOTHISH P G, type=text}, {text=15, type=text}, {text=Duration: 1 minutes, Amount: ?1, type=text}]}]}
 payload : {"messaging_product":"whatsapp","recipient_type":"individual","to":"+919943466852","type":"template","template":{"name":"jaspers_market_order_confirmation_v1","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"text":"23EUAI048 JOTHISH P G","type":"text"},{"text":"15","type":"text"},{"text":"Duration: 1 minutes, Amount: ?1","type":"text"}]}]}}
 ========== REQUEST ==========
@@ -17,8 +53,42 @@ Headers:
 Authorization: [Bearer EAAPaRQYlbB8BSgknSpfksK8sr9ErHsMrQ0hAoOyPAfCCf7h25lxsReq32BgCZChOujoLCj1BIzS0FJYK0dUdhZCQxgdaeZAD7nafEJ4gVZBQQuZBFJON2GHb3RkryGwIJiQHeSzk3NYvIoPW8objDH9fEvLBYy7oLCaTMFL9lk2FIatyv036Qg7Tql7VxQDGjf7ZB3glTvazZBMobCDd0tIsWDZCFQX9ZAaWcfZBqqR2aaZAmocu1PXNb2bHzimtAF9ZByNGCZCXrtkh4n6hUoZCZBDMAcdwkbO]
 Content-Type: [application/json]
 Body:
+_______________________________________________________________________
+Status code : 200
+HTTP version: HTTP_2
+Request URI : https://graph.facebook.com/v23.0/1228158723724156/messages
+Method      : POST
 
+--- Response headers ---
+:status: 200
+access-control-allow-origin: *
+alt-svc: h3=":443"; ma=86400
+cache-control: private, no-cache, no-store, must-revalidate
+content-length: 207
+content-security-policy: frame-ancestors 'none'
+content-type: application/json
+date: Sun, 20 Sep 2026 19:36:14 GMT
+expires: Sat, 01 Jan 2000 00:00:00 GMT
+facebook-api-version: v26.0
+pragma: no-cache
+strict-transport-security: max-age=15552000; preload
+vary: Origin, Accept-Encoding
+x-content-type-options: nosniff
+x-fb-connection-quality: GOOD; q=0.7, rtt=81, rtx=0, c=10, mss=1280, tbw=515, tp=-1, tpl=-1, uplat=1208, ullat=0
+x-fb-debug: u8Uj0QhvryMWCDvO7qcIn7XgSA9+q3mrtx6HyUHmKrIknkdbArFLcKTt/goRiROjiOrWr5051uKSAKXkrMct/w==
+x-fb-request-id: AfzVP21qsOdoBp6NeJCbWg7
+x-fb-rev: 1047984038
+x-fb-trace-id: BvEo9Eus1lx
+x-frame-options: DENY
 
+--- Body ---
+{"messaging_product":"whatsapp","contacts":[{"input":"+919943466852","wa_id":"919943466852"}],"messages":[{"id":"wamid.HBgMOTE5OTQzNDY2ODUyFQIAERgSNTYxQjM5MUU3REVDMzAwMDBDAA==","message_status":"accepted"}]}
+
+--- Extras ---
+SSL session    : jdk.internal.net.http.common.ImmutableExtendedSSLSession@6b7873cb
+Previous resp. : null
+
+_____________________________________________________________
 {
   "messaging_product": "whatsapp",
   "recipient_type": "individual",
