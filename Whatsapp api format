@@ -126,3 +126,43 @@ You enter the code; the number is added to an allowed-recipients list attached t
 On every send, the API checks the recipient against this list. If not present, the request fails with an error (commonly "recipient phone number not in allowed list").
 
 This exists so the free, Meta-owned test number can't be used for spam.
+
+Phase 6: What happens when your Java code sends a message
+
+Your HttpClient.send(...) triggers this chain:
+
+Your server
+  │  POST https://graph.facebook.com/v23.0/<PHONE_NUMBER_ID>/messages
+  │  Authorization: Bearer EAA...
+  ▼
+1. Edge / load balancer (TLS termination, DDoS/abuse filtering)
+2. Graph API gateway
+     - parses API version (v23.0)
+     - validates the token (exists? not expired? not revoked? which app/user?)
+     - checks token scopes include whatsapp_business_messaging
+3. Authorization
+     - does this identity have access to this Phone Number ID / its WABA?
+     - is the app in an allowed state?
+4. Request validation
+     - JSON schema (messaging_product, to, type, template…)
+     - template name + language exist AND are approved on this WABA
+     - number of parameters matches placeholders in the template
+5. Policy / eligibility checks
+     - recipient in allowed list (test mode)
+     - recipient phone format valid, has WhatsApp
+     - messaging-limit tier and rate limits for this number
+     - business-initiated conversation rules (templates only, outside 24h window)
+     - payment/billing status (production)
+6. Message is accepted, assigned a wamid ID, and queued
+  ▼
+7. Immediately returns HTTP 200 with the wamid  ← your code logs "success" here
+  ▼ (asynchronous from here)
+8. Cloud API service hands the message to WhatsApp's messaging servers
+9. Message is end-to-end encrypted (Signal protocol) for the recipient's devices
+10. Delivered to the user's phone (or held until they are online)
+11. Status events: sent → delivered → read (or failed)
+12. If a webhook is configured, Meta POSTs these status events to your callback URL
+
+Steps 1 to 7 are synchronous, so failures there (bad token, wrong template, not in allowed list, over rate limit) come back as HTTP errors in your response. Steps 8 to 12 happen after your response, which is why a 200 does not equal delivery.
+
+(inferred) Steps 3 and 5 use the graph permission edges and per-number counters (quality, limits) stored in Meta's internal databases; the queue in step 6 is what makes the API fast and retry-capable.
