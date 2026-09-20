@@ -61,3 +61,28 @@ App ID (public, numeric)	Identifies your app in every OAuth/Graph call
 App Secret (private)	Proves server-side that requests really come from your app; used for signing webhooks and token exchange
 App record in Development mode	Only you and assigned roles (admins, developers, testers) can use it
 Role assignments	You become the app Admin
+
+Phase 3: Adding the WhatsApp product
+Step 4. "Add product: WhatsApp" then "API Setup"
+
+When you enable WhatsApp on the app, Meta provisions WhatsApp-related resources.
+
+Backend, what happens (this is the key part):
+
+A Meta Business Portfolio is linked or created. WhatsApp assets must belong to a business, not an individual.
+A WhatsApp Business Account (WABA) is created and linked to your business and your app. The WABA is the container holding phone numbers, templates, and billing info. It gets a WABA ID.
+A test phone number is provisioned and attached to that WABA. Meta owns and operates this number; you can't call it or use it in the WhatsApp app. It is a real number in WhatsApp's system, registered on the Cloud API.
+A Phone Number ID is generated for that number. This is a Graph node ID, a globally unique numeric ID that identifies the registered sender inside Meta's infrastructure.
+Default template hello_world is pre-approved on the test WABA so you can send immediately.
+A temporary access token is generated (see Phase 4).
+What the Phone Number ID really is
+
+It is not the phone number. It is an internal identifier that maps to:
+
+the actual phone number (e.g. +1 555 …),
+its display name and verification status,
+its quality rating and messaging limit tier,
+its registration state on the Cloud API (which routes it to Meta's servers rather than an on-premise client),
+its parent WABA.
+
+That is why your URL uses it: graph.facebook.com/v23.0/<PHONE_NUMBER_ID>/messages. You are saying "send from this registered sender node."
