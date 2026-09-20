@@ -39,3 +39,25 @@ Body:
     ]
   }
 }
+
+
+Facebook user account (you)
+   └── Developer account (registered on developers.facebook.com)
+   └── Meta Business Portfolio (formerly Business Manager)   [business ID]
+           ├── App                                            [app ID + app secret]
+           ├── WhatsApp Business Account (WABA)               [WABA ID]
+           │       ├── Phone number(s)                        [PHONE NUMBER ID]
+           │       └── Message templates                      [template IDs]
+           └── System User(s)                                 [for permanent tokens]
+
+Phase 1: Creating the developer account
+Phase 2: Creating the app
+Create App
+You give an app name, contact email, and choose a use case or app type (for WhatsApp, "Business"/"Connect with customers through WhatsApp"). You may be asked to attach a Business Portfolio, or the flow creates one.
+Backend, what is created:
+
+Created object	Purpose
+App ID (public, numeric)	Identifies your app in every OAuth/Graph call
+App Secret (private)	Proves server-side that requests really come from your app; used for signing webhooks and token exchange
+App record in Development mode	Only you and assigned roles (admins, developers, testers) can use it
+Role assignments	You become the app Admin
