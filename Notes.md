@@ -1190,3 +1190,23 @@ fresh_hash     = hash(header + payload)     ← recomputed by your server itself
 
 if recovered_hash == fresh_hash → valid, untampered
 if recovered_hash != fresh_hash → invalid, reject
+
+When moving 
+beyond Meta’s test environment, you will generally need:
+•
+A real phone number dedicated to WhatsApp Business
+•
+A configured production WhatsApp Business Account
+•
+Business verification, depending on Meta’s requirements for the account
+•
+An approved display name
+•
+A permanent or system-user access token instead of a temporary development token
+•
+Approved message templates
+•
+Production recipient numbers
+•
+Proper privacy and consent handling for storing and messaging phone numbers
+Registering a number with WhatsApp Business is separate from simply having a PHONE_NUMBER_ID. The test number is enough for development, but it is not suitable as your application’s long-term production sender.
