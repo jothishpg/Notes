@@ -1,0 +1,19 @@
+template : {name=hello_world, language={code=en_US}}
+payload : {"messaging_product":"whatsapp","recipient_type":"individual","to":"+919943466852","type":"template","template":{"name":"hello_world","language":{"code":"en_US"}}}
+========== REQUEST ==========
+Method: POST
+URI: https://graph.facebook.com/v23.0/1228158723724156/messages
+Headers:
+Authorization: [Bearer EAAPaRQYlbB8BSgknSpfksK8sr9ErHsMrQ0hAoOyPAfCCf7h25lxsReq32BgCZChOujoLCj1BIzS0FJYK0dUdhZCQxgdaeZAD7nafEJ4gVZBQQuZBFJON2GHb3RkryGwIJiQHeSzk3NYvIoPW8objDH9fEvLBYy7oLCaTMFL9lk2FIatyv036Qg7Tql7VxQDGjf7ZB3glTvazZBMobCDd0tIsWDZCFQX9ZAaWcfZBqqR2aaZAmocu1PXNb2bHzimtAF9ZByNGCZCXrtkh4n6hUoZCZBDMAcdwkbO]
+Content-Type: [application/json]
+Body:
+
+template : {name=jaspers_market_order_confirmation_v1, language={code=en_US}, components=[{type=body, parameters=[{text=23EUAI048 JOTHISH P G, type=text}, {text=15, type=text}, {text=Duration: 1 minutes, Amount: ?1, type=text}]}]}
+payload : {"messaging_product":"whatsapp","recipient_type":"individual","to":"+919943466852","type":"template","template":{"name":"jaspers_market_order_confirmation_v1","language":{"code":"en_US"},"components":[{"type":"body","parameters":[{"text":"23EUAI048 JOTHISH P G","type":"text"},{"text":"15","type":"text"},{"text":"Duration: 1 minutes, Amount: ?1","type":"text"}]}]}}
+========== REQUEST ==========
+Method: POST
+URI: https://graph.facebook.com/v23.0/1228158723724156/messages
+Headers:
+Authorization: [Bearer EAAPaRQYlbB8BSgknSpfksK8sr9ErHsMrQ0hAoOyPAfCCf7h25lxsReq32BgCZChOujoLCj1BIzS0FJYK0dUdhZCQxgdaeZAD7nafEJ4gVZBQQuZBFJON2GHb3RkryGwIJiQHeSzk3NYvIoPW8objDH9fEvLBYy7oLCaTMFL9lk2FIatyv036Qg7Tql7VxQDGjf7ZB3glTvazZBMobCDd0tIsWDZCFQX9ZAaWcfZBqqR2aaZAmocu1PXNb2bHzimtAF9ZByNGCZCXrtkh4n6hUoZCZBDMAcdwkbO]
+Content-Type: [application/json]
+Body:
