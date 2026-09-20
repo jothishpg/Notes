@@ -86,3 +86,43 @@ its registration state on the Cloud API (which routes it to Meta's servers rathe
 its parent WABA.
 
 That is why your URL uses it: graph.facebook.com/v23.0/<PHONE_NUMBER_ID>/messages. You are saying "send from this registered sender node."
+
+Phase 4: The access token
+Step 5. Temporary token (what you see in API Setup)
+
+The dashboard shows an access token that lasts about 24 hours.
+
+Backend:
+
+Meta issues an OAuth 2.0 user access token for you, scoped with WhatsApp permissions: whatsapp_business_messaging (send/receive messages) and whatsapp_business_management (manage templates, numbers, WABA).
+The token is an opaque string (usually starting EAA…). It carries no readable data for you. (inferred) Meta stores a server-side record: token → user ID, app ID, scopes, issue time, expiry, and revocation state. On each request they look it up (or validate a signed structure) rather than trusting the string blindly.
+You can inspect any token via the Graph debug_token endpoint, which shows app, user, scopes, and expiry. That confirms the metadata lives server-side.
+Why it expires
+
+A user token is tied to your personal login session. Short life limits damage if leaked. For production it is unsuitable, since your service would break daily.
+
+Token types
+Type	Lifetime	Tied to	Use
+Temporary user token	~24 h	You (a person)	Quick testing
+Long-lived user token	~60 days	A person	Rarely suitable
+System User token	Up to permanent	A non-human "system user" in your Business Portfolio	Production servers
+Business Integration System User token	Permanent-ish	Created via Embedded Signup for clients (BSP/tech provider)	SaaS platforms onboarding customers
+Step 6. Creating a permanent token (production path)
+In Business Settings, Users, System Users, create a system user (admin role).
+Assign assets to it: your app and your WABA, with full control.
+Click Generate token, select the app, tick the two WhatsApp permissions, and choose expiry (never or 60 days).
+
+Backend: a system user is a machine identity owned by the business, not a person. The token maps to that identity, so it is not affected by anyone's password change or leaving the company. The "assign assets" step creates the permission edges in the graph: system user → can act on → WABA → contains → phone number. Those edges are what authorization checks later.
+
+Phase 5: Recipients and the test-number rules
+Step 7. Adding recipient numbers (test mode)
+
+In API Setup, you add up to 5 recipient numbers under "To."
+
+Backend:
+
+You enter the number; Meta sends a verification code via WhatsApp to it.
+You enter the code; the number is added to an allowed-recipients list attached to your test WABA.
+On every send, the API checks the recipient against this list. If not present, the request fails with an error (commonly "recipient phone number not in allowed list").
+
+This exists so the free, Meta-owned test number can't be used for spam.
