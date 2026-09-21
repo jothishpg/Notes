@@ -236,3 +236,18 @@ Your server
 Steps 1 to 7 are synchronous, so failures there (bad token, wrong template, not in allowed list, over rate limit) come back as HTTP errors in your response. Steps 8 to 12 happen after your response, which is why a 200 does not equal delivery.
 
 (inferred) Steps 3 and 5 use the graph permission edges and per-number counters (quality, limits) stored in Meta's internal databases; the queue in step 6 is what makes the API fast and retry-capable.
+
+OBJECT_MAPPER (Jackson ObjectMapper) :
+
+This is a JSON converter. It doesn't do any networking. It converts between Java objects and JSON text.
+// Java object/Map -> JSON string (for the request body)
+String jsonBody = OBJECT_MAPPER.writeValueAsString(payloadMap);
+
+// JSON string -> Java object / tree (for the response)
+JsonNode root = OBJECT_MAPPER.readTree(response.body());
+String messageId = root.path("messages").get(0).path("id").asText();
+
+How they work together in your WhatsApp code
+
+Java Map/object --OBJECT_MAPPER--> JSON string --HTTP_CLIENT--> Meta API
+Meta API --HTTP_CLIENT--> JSON string --OBJECT_MAPPER--> Java object
