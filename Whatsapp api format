@@ -251,3 +251,38 @@ How they work together in your WhatsApp code
 
 Java Map/object --OBJECT_MAPPER--> JSON string --HTTP_CLIENT--> Meta API
 Meta API --HTTP_CLIENT--> JSON string --OBJECT_MAPPER--> Java object
+
+
+Why a WhatsApp Business Account (WABA) can hold multiple phone numbers
+A WABA is a container, not a phone line. It holds settings, templates, billing, and business verification. Phone numbers are separate resources placed inside it. Nothing stops a business from having many, and there are real practical reasons to.
+
+Reason 1: Each number has its own messaging limit (the biggest reason)
+Every phone number gets its own tier, a cap on how many unique users it can message-initiate to in 24 hours (for example 250, 1K, 10K, 100K, unlimited). This limit belongs to the number, not the WABA.
+Example: Your parking app has 50,000 users across many cities. One number capped at 10K/day can't message all of them. Adding a second and third number, each with its own 10K limit, lets you reach more users per day. This is the same idea as needing more servers when one server can't handle all traffic; here it's "more numbers to raise total sending capacity."
+
+Reason 2: Isolating quality and risk
+Meta tracks a quality rating per number, based on user blocks, reports, and negative feedback. A number with bad quality can be restricted or have its tier lowered.
+
+Example: Suppose your app sends both:
+Booking confirmations (users expect these, rarely blocked)
+Promotional offers (users block these more often)
+If both go from the same number and the promotional messages annoy people, the whole number's quality drops, including your booking confirmations. Splitting them onto two numbers means a quality problem in one flow doesn't damage the other.
+
+Reason 3: Different departments or products need separate identities
+A large business isn't really "one thing." Its numbers often map to real organizational lines:
+
+Number	Used for
++91 90000 00001	Order/booking confirmations
++91 90000 00002	Customer support chat
++91 90000 00003	Marketing and promotions
++91 90000 00004	A different brand or app the same company runs
+Each shows a different display name to the user, so a support conversation and a promotional blast don't look like they come from the same source, which builds trust and keeps conversations organized on the user's side.
+
+Reason 4: Regional or per-country presence
+Example: If your parking app expands to another country, businesses often register a local number for that market, since local numbers get better user trust and, in some cases, are tied to local regulatory or carrier requirements.
+
+Reason 5: Redundancy and safety
+If a number is temporarily restricted, banned for policy violations, or hits its rate limit, having a backup number already registered in the same WABA lets you keep operating instead of being fully blocked while you resolve the issue with the first number.
+
+Reason 6: Testing without touching production
+Meta gives you a free test number in the WABA separate from your real production number. You test templates, webhooks, and flows on the test number without any risk to your real number's quality rating or your real customers.
