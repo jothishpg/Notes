@@ -4,6 +4,17 @@ Tomcat maps URL → Servlet.	                 Tomcat maps URL → Jersey Servlet
 You extend HttpServlet.                      You write POJO classes with annotations.
 You override doGet(), doPost().              You annotate methods with @GET, @POST.
 
+Listener Interfaces:
+Interface												What it listens for
+ServletContextListener									Application start/stop
+ServletContextAttributeListener							Context attribute changes
+ServletRequestListener									Request creation/destruction
+ServletRequestAttributeListener							Request attribute changes
+HttpSessionListener										Session creation/destruction
+HttpSessionAttributeListener							Session attribute changes
+HttpSessionBindingListener								Object being bound/unbound to a session
+HttpSessionActivationListener							Session activation/passivation
+
 Annotation - Purpose
 
 @Path-Maps URL path.
