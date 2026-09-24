@@ -1221,3 +1221,19 @@ Production recipient numbers
 •
 Proper privacy and consent handling for storing and messaging phone numbers
 Registering a number with WhatsApp Business is separate from simply having a PHONE_NUMBER_ID. The test number is enough for development, but it is not suitable as your application’s long-term production sender.
+
+Password Hashing using BCrypt:
+
+The core idea: BCrypt isn't a hash function, it's a key derivation function built from a cipher
+
+This is the first thing that trips people up. BCrypt doesn't use SHA-anything internally. It's built on top of a modified version of the Blowfish block cipher (a symmetric encryption algorithm), repurposed to be deliberately slow. It was designed in 1999 by Niels Provos and David Mazières specifically to solve the password-storage problem — not adapted from a general-purpose hash function after the fact.
+
+Why not just use SHA-256 or MD5?
+A cryptographic hash function like SHA-256 is designed to do one thing extremely well: be fast, so you can hash large files or verify data integrity quickly. That's a feature for file checksums and a catastrophic flaw for passwords.
+
+Here's the math that makes this concrete. Suppose you use plain salted SHA-256:
+A modern GPU can compute roughly 10+ billion SHA-256 hashes per second.
+If a password database leaks, an attacker doesn't need to "break" SHA-256 mathematically — they just try every likely password, hash it, and compare. This is called an offline brute-force / dictionary attack.
+At 10 billion guesses/sec, an 8-character password made of mixed case + digits (62^8 ≈ 218 trillion combinations) falls in about 6 hours.
+
+BCrypt fixes this not by being mathematically stronger, but by being deliberately, adjustably slow. If BCrypt takes 250ms per hash instead of 0.0000001ms, the same attack that took 6 hours now takes over 190,000 years. That's the entire point: the algorithm itself is the defense, not just the randomness of the salt.
