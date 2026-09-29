@@ -77,3 +77,35 @@ allows only one occurrence of TRUE.
 
 What UNIQUE means
 No two rows can have the same value.
+
+What is a Sequence?
+A sequence is simply a database object that generates numbers.
+
+Think of it like a Car
+Suppose I say:
+
+Speed = 60 km/h
+Fuel = Petrol
+Mileage = 20 km/l
+Show more lines
+
+Do I have a car now?
+No.
+
+Those are just properties.
+You still need the actual car.
+
+Similarly:
+
+START WITH 1
+INCREMENT BY 1
+CACHE 1
+Show more lines
+are merely properties.
+
+You still need something that:
+stores current value
+increments current value
+handles concurrency
+returns next value
+persists state
