@@ -109,3 +109,95 @@ increments current value
 handles concurrency
 returns next value
 persists state
+
+What is a Partial Index?
+Normal index:
+CREATE INDEX ...
+ON meta_system_user(purpose);
+Show more lines
+
+indexes ALL rows.
+
+Example:
+MASTER
+MESSAGING
+MESSAGING
+MESSAGING
+
+Partial index:
+
+WHERE purpose='MASTER'
+indexes only rows matching that condition.
+Only:
+MASTER
+
+Why UNIQUE?
+No duplicate indexed values allowed.
+
+First insert
+INSERT INTO meta_system_user (purpose)
+VALUES ('MASTER');
+
+Works.
+
+Index:
+MASTER
+
+Second insert
+INSERT INTO meta_system_user (purpose)
+VALUES ('MASTER');
+
+Fails.
+
+Because:
+MASTER already exists
+
+Second Index
+CREATE INDEX idx_meta_system_user_messaging_lookup ON meta_system_user (
+purpose,
+status,
+last_used_at);
+
+The application probably executes queries like:
+SQL
+SELECT *
+FROM meta_system_user
+WHERE purpose='MESSAGING'
+AND status='ACTIVE'
+ORDER BY last_used_at
+LIMIT 1;
+
+Without the index PostgreSQL does:
+Scan entire table
+Filter purpose
+Filter status
+Sort last_used_at
+Return first row
+
+With the index
+
+PostgreSQL keeps data organized roughly like:
+MESSAGING ACTIVE 2026-01-01
+MESSAGING ACTIVE 2026-01-05
+MESSAGING ACTIVE 2026-01-10
+MESSAGING REVOKED 2026-01-02
+MASTER ACTIVE 2026-01-03
+
+Now it can directly find:
+MESSAGING
+ACTIVE
+smallest last_used_at
+
+Order matters.
+
+The index is sorted first by:
+Plain Text
+then by:
+status
+then by:
+last_used_at
+
+Think of it like:
+purpose
+    └── status
+            └── last_used_at
