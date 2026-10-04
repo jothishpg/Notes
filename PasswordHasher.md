@@ -11,3 +11,8 @@ BCrypt.gensalt(COST) // COST = 12, meaning 2^12 = 4096 rounds
 
 BCrypt is deliberately slow, and — critically — tunably slow. The cost parameter (here, 12) means the algorithm internally repeats its core computation 2^12 = 4,096 times. This is called a work factor. Instead of computing a hash in microseconds, it takes on the order of hundreds of milliseconds.
 
+$2a$12$N9qo8uLOickgx2ZMRZoMye IjZAgcfl7p92ldGxad68LJZdL17lhWy
+\__/\/ \____________________/ \_____________________________/
+ |  |          salt (22)                 hash (31)
+ |  cost (work factor, 2^12 rounds)
+ algorithm version
