@@ -16,3 +16,25 @@ $2a$12$N9qo8uLOickgx2ZMRZoMye IjZAgcfl7p92ldGxad68LJZdL17lhWy
  |  |          salt (22)                 hash (31)
  |  cost (work factor, 2^12 rounds)
  algorithm version
+
+Salt:
+BCrypt.gensalt(COST) generates a fresh random salt every single call — meaning two users with the identical password "password123" get two completely different hash strings in your database. This is critical: without unique salts, an attacker could precompute hashes for common passwords once and instantly check them against every row in your stolen database (a "rainbow table" attack). With unique salts, they'd have to attack each password individually.
+
+User A:
+MyPassword123
+     +
+salt A
+     ↓
+bcrypt
+     ↓
+hash A
+
+
+User B:
+MyPassword123
+     +
+salt B
+     ↓
+bcrypt
+     ↓
+hash B
